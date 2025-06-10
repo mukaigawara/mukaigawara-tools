@@ -1,71 +1,74 @@
-# test README
+# 🧪 Test - VS Code Extension
 
-This is the README for your extension "test". After writing up a brief description, we recommend including the following sections.
-
-## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+VS Code のサイドバーにカスタムツールを追加し、ターミナルでよく使うコマンドをワンクリックで実行できる拡張機能です。
 
 ---
 
-## Following extension guidelines
+## ✨ 主な機能
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+- 📌 アクティビティバーにパネルを追加
+- 🖱️ モダンな UI のボタンで以下の操作を即実行
+  - ターミナルのクリア
+  - 新しいターミナルを開く
+  - `docker compose exec -it web bash`
+  - `RAILS_ENV=test` をセット
+  - 現在のファイルを `rspec` 実行
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+---
 
-## Working with Markdown
+## 📸 スクリーンショット
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+> `images/extension-ui.png` にスクリーンショットを追加してください。
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+![UI](images/extension-ui.png)
 
-## For more information
+---
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+## ⚙️ 要件
 
-**Enjoy!**
+- VS Code v1.100.0 以上
+- ターミナルで使いたいコマンドがシェルで実行可能であること（例: Docker, Rails）
+
+---
+
+## 🔧 拡張機能の設定
+
+現時点では設定オプションはありません。将来的に追加される可能性があります。
+
+---
+
+## 🐞 既知の問題
+
+- ワークスペース外のファイルを開いている場合、`rspec` コマンドが機能しません。
+- 実行コマンドはすべて "MyTerminal" に送られます（将来的に選択可能にする予定）。
+
+---
+
+## 📦 リリースノート
+
+### 1.0.0
+
+- 初期リリース
+- サイドパネル UI 作成
+- `rspec` 実行、Docker、環境変数セットなどに対応
+
+---
+
+## 📚 開発者向けリンク
+
+- [VS Code Extension API](https://code.visualstudio.com/api)
+- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+
+---
+
+## ✍️ Markdown Tips
+
+VS Code でこのファイルを開いて次のショートカットを試してみてください：
+
+- プレビュー表示: `Shift+Cmd+V` (mac) / `Shift+Ctrl+V` (Win/Linux)
+- 分割表示: `Cmd+\` (mac) / `Ctrl+\` (Win/Linux)
+
+---
+
+**Enjoy your development! 🚀**
+ 
