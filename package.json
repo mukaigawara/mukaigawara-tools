@@ -1,7 +1,12 @@
 {
-  "name": "test",
-  "displayName": "Test",
-  "description": "",
+  "name": "mukaigawara-tools",
+  "displayName": "Mukaigawara Tools",
+  "description": "A collection of tools for Mukaigawara development.",
+  "publisher": "mukaigawara",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mukaigawara/mukaigawara-tools"
+  },
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.100.0"
@@ -17,7 +22,8 @@
         {
           "type": "webview",
           "id": "custom-container-id-1",
-          "name": "custom-container-id-1-name"
+          "name": "custom-container-id-1-name",
+          "icon": "./icons/ris.svg"
         }
       ]
     },
@@ -25,7 +31,7 @@
       "activitybar": [
         {
           "id": "sample-container",
-          "title": "Sample",
+          "title": "Tools",
           "icon": "./icons/ris.svg"
         }
       ]
