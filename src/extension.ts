@@ -29,6 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
     runDockerAttach: () => withTerminal((t) => t.sendText('docker attach mflow-backend-web-1')),
     setEnv: () => withTerminal((t) => t.sendText('RAILS_ENV=test')),
     runRspec: () => runFileCommand('rspec'),
+    runRspecLine: () => runLineCommand('rspec'),
     runRubocop: () => runFileCommand('rubocop -a'),
     runRubocopAll: () => withTerminal((t) => t.sendText('rubocop -a', true)),
     runRailsConsole: () => withTerminal((t) => t.sendText('rails console')),
@@ -72,9 +73,12 @@ class RailsToolsProvider implements vscode.TreeDataProvider<RailsToolItem> {
         ['docker attach mflow-backend-web-1', 'runDockerAttach'],
         ['RAILS_ENV=test', 'setEnv'],
       ],
-      rspec: [['rspec（現在のファイル）', 'runRspec']],
+      rspec: [
+        ['rspec {現在のファイル}', 'runRspec'],
+        ['rspec {現在のファイル}:{現在の行}', 'runRspecLine'],
+      ],
       rubocop: [
-        ['rubocop -a（現在のファイル）', 'runRubocop'],
+        ['rubocop -a {現在のファイル}', 'runRubocop'],
         ['rubocop -a（全ファイル）', 'runRubocopAll'],
       ],
       rails: [
@@ -148,6 +152,20 @@ function runFileCommand(command: string) {
   const relativePath = vscode.workspace.asRelativePath(editor.document.uri);
   withTerminal((t) => t.sendText(`${command} ${relativePath}`, true));
   vscode.window.showInformationMessage(`${command} を実行: ${relativePath}`);
+}
+
+// 現在の行を取得してコマンドを実行する
+function runLineCommand(command: string) {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    return vscode.window.showErrorMessage('アクティブなエディタが見つかりません。');
+  }
+  const line = editor.document.lineAt(editor.selection.active.line);
+  const relativePath = vscode.workspace.asRelativePath(editor.document.uri);
+  withTerminal((t) => t.sendText(`${command} ${relativePath}:${line.range.start.line + 1}`, true));
+  vscode.window.showInformationMessage(
+    `${command} を実行: ${relativePath}:${line.range.start.line + 1}`
+  );
 }
 
 export function deactivate() {}
