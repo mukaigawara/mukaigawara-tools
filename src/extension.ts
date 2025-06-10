@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
   const provider = new RailsToolsProvider();
-  const treeView = vscode.window.createTreeView('railsToolsView', {
+  const treeView = vscode.window.createTreeView('MukaiToolsView', {
     treeDataProvider: provider,
     showCollapseAll: true,
   });
@@ -138,7 +138,7 @@ function withTerminal(action: (t: vscode.Terminal) => void, message?: string) {
 }
 
 function getOrCreateTerminal(): vscode.Terminal {
-  const terminal = vscode.window.activeTerminal ?? vscode.window.createTerminal('Rails Tools');
+  const terminal = vscode.window.activeTerminal ?? vscode.window.createTerminal('Mukai Tools');
   terminal.show();
   return terminal;
 }
