@@ -4,28 +4,28 @@ export function activate(context: vscode.ExtensionContext) {
   const provider = new RailsToolsProvider();
   const treeView = vscode.window.createTreeView('railsToolsView', {
     treeDataProvider: provider,
-    showCollapseAll: true
+    showCollapseAll: true,
   });
 
   context.subscriptions.push(treeView);
 
   const commandMap: Record<string, () => void> = {
-    clearTerminal: () => withTerminal(t => t.sendText('clear', true), 'ターミナルをクリアしました'),
+    clearTerminal: () =>
+      withTerminal((t) => t.sendText('clear', true), 'ターミナルをクリアしました'),
     newTerminal: () => {
       vscode.window.createTerminal().show();
       vscode.window.showInformationMessage('新しいターミナルを開きました');
     },
-    runDocker: () => withTerminal(t => t.sendText('docker compose exec -it web bash'), 'Docker bashを起動しました'),
-    setEnv: () => withTerminal(t => t.sendText('RAILS_ENV=test'), 'RAILS_ENV=testを設定しました'),
+    runDockerBash: () => withTerminal((t) => t.sendText('docker compose exec -it web bash')),
+    runDockerAttach: () => withTerminal((t) => t.sendText('docker attach mflow-backend-web-1')),
+    setEnv: () => withTerminal((t) => t.sendText('RAILS_ENV=test')),
     runRspec: () => runFileCommand('rspec'),
     runRubocop: () => runFileCommand('rubocop -a'),
-    runRubocopAll: () => withTerminal(t => t.sendText('rubocop -a', true), '全ファイルでRubocopを実行しました'),
+    runRubocopAll: () => withTerminal((t) => t.sendText('rubocop -a', true)),
   };
 
   Object.entries(commandMap).forEach(([name, callback]) =>
-    context.subscriptions.push(
-      vscode.commands.registerCommand(`railstools.${name}`, callback)
-    )
+    context.subscriptions.push(vscode.commands.registerCommand(`railstools.${name}`, callback))
   );
 }
 
@@ -36,7 +36,7 @@ class RailsToolsProvider implements vscode.TreeDataProvider<RailsToolItem> {
 
   getChildren(element?: RailsToolItem): RailsToolItem[] {
     if (!element) {
-      return ['terminal', 'docker', 'rspec', 'rubocop'].map(section =>
+      return ['terminal', 'docker', 'rspec', 'rubocop'].map((section) =>
         createSectionItem(section.toUpperCase(), section)
       );
     }
@@ -44,22 +44,26 @@ class RailsToolsProvider implements vscode.TreeDataProvider<RailsToolItem> {
     const sectionCommands: Record<string, [string, string][]> = {
       terminal: [
         ['ターミナルをクリア', 'clearTerminal'],
-        ['新しいターミナルを開く', 'newTerminal']
+        ['新しいターミナルを開く', 'newTerminal'],
       ],
       docker: [
-        ['docker compose exec -it web bash', 'runDocker'],
-        ['RAILS_ENV=test', 'setEnv']
+        ['docker compose exec -it web bash', 'runDockerBash'],
+        ['docker attach mflow-backend-web-1', 'runDockerAttach'],
+        ['RAILS_ENV=test', 'setEnv'],
       ],
       rspec: [['rspec（現在のファイル）', 'runRspec']],
       rubocop: [
         ['rubocop -a（現在のファイル）', 'runRubocop'],
-        ['rubocop -a（全ファイル）', 'runRubocopAll']
-      ]
+        ['rubocop -a（全ファイル）', 'runRubocopAll'],
+      ],
+      rails: [['rails console', 'runRailsConsole']],
     };
 
-    return sectionCommands[element.sectionId ?? '']?.map(([label, cmd]) =>
-      createCommandItem(label, `railstools.${cmd}`)
-    ) ?? [];
+    return (
+      sectionCommands[element.sectionId ?? '']?.map(([label, cmd]) =>
+        createCommandItem(label, `railstools.${cmd}`)
+      ) ?? []
+    );
   }
 }
 
@@ -92,7 +96,9 @@ function createCommandItem(label: string, commandId: string) {
 function withTerminal(action: (t: vscode.Terminal) => void, message?: string) {
   const terminal = getOrCreateTerminal();
   action(terminal);
-  if (message) {return vscode.window.showInformationMessage(message);};
+  if (message) {
+    return vscode.window.showInformationMessage(message);
+  }
 }
 
 function getOrCreateTerminal(): vscode.Terminal {
@@ -103,10 +109,12 @@ function getOrCreateTerminal(): vscode.Terminal {
 
 function runFileCommand(command: string) {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) {return vscode.window.showErrorMessage('アクティブなエディタが見つかりません。');};
+  if (!editor) {
+    return vscode.window.showErrorMessage('アクティブなエディタが見つかりません。');
+  }
 
   const relativePath = vscode.workspace.asRelativePath(editor.document.uri);
-  withTerminal(t => t.sendText(`${command} ${relativePath}`, true));
+  withTerminal((t) => t.sendText(`${command} ${relativePath}`, true));
   vscode.window.showInformationMessage(`${command} を実行: ${relativePath}`);
 }
 
