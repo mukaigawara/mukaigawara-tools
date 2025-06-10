@@ -14,27 +14,119 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "keywords": [
+    "rails",
+    "ruby",
+    "terminal",
+    "docker",
+    "rspec",
+    "rubocop",
+    "development"
+  ],
+  "activationEvents": [
+    "*"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
-    "views": {
-      "sample-container": [
+    "viewsContainers": {
+      "activitybar": [
         {
-          "type": "webview",
-          "id": "custom-container-id-1",
-          "name": "custom-container-id-1-name",
+          "id": "railsToolsContainer",
+          "title": "Rails Tools",
           "icon": "./icons/ris.svg"
         }
       ]
     },
-    "viewsContainers": {
-      "activitybar": [
+    "views": {
+      "railsToolsContainer": [
         {
-          "id": "sample-container",
-          "title": "Tools",
-          "icon": "./icons/ris.svg"
+          "id": "railsToolsView",
+          "name": "Rails Tools"
         }
       ]
+    },
+    "commands": [
+      {
+        "command": "railstools.clearTerminal",
+        "title": "Clear Terminal",
+        "category": "Rails Tools",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "railstools.newTerminal",
+        "title": "New Terminal",
+        "category": "Rails Tools",
+        "icon": "$(add)"
+      },
+      {
+        "command": "railstools.runDocker",
+        "title": "Run Docker Bash",
+        "category": "Rails Tools",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "railstools.setEnv",
+        "title": "Set RAILS_ENV=test",
+        "category": "Rails Tools",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "railstools.runRspec",
+        "title": "Run RSpec",
+        "category": "Rails Tools",
+        "icon": "$(beaker)"
+      },
+      {
+        "command": "railstools.runRubocop",
+        "title": "Run Rubocop",
+        "category": "Rails Tools",
+        "icon": "$(wrench)"
+      },
+      {
+        "command": "railstools.runRubocopAll",
+        "title": "Run Rubocop All",
+        "category": "Rails Tools",
+        "icon": "$(tools)"
+      },
+      {
+        "command": "railstools.refresh",
+        "title": "Refresh",
+        "category": "Rails Tools",
+        "icon": "$(refresh)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "railstools.refresh",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Mukaigawara Tools",
+      "properties": {
+        "mukaigawaratools.dockerCommand": {
+          "type": "string",
+          "default": "docker compose exec -it web bash",
+          "description": "Docker bashコマンド"
+        },
+        "mukaigawaratools.testEnv": {
+          "type": "string",
+          "default": "RAILS_ENV=test",
+          "description": "テスト環境変数"
+        },
+        "mukaigawaratools.clearCommand": {
+          "type": "string",
+          "default": "clear",
+          "description": "ターミナルクリアコマンド (Windows: cls, Mac/Linux: clear)"
+        },
+        "mukaigawaratools.showNotifications": {
+          "type": "boolean",
+          "default": true,
+          "description": "コマンド実行時に通知を表示"
+        }
+      }
     }
   },
   "scripts": {
