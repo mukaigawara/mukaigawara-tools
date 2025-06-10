@@ -2,6 +2,8 @@
 
 VS Code のサイドバーにカスタムツールを追加し、ターミナルでよく使うコマンドをワンクリックで実行できる拡張機能です。
 
+[https://github.com/mukaigawara/mukaigawara-tools](https://github.com/mukaigawara/mukaigawara-tools)
+
 ---
 
 ## ✨ 主な機能
