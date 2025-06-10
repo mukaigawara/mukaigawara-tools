@@ -46,7 +46,45 @@ class MySidebarViewProvider implements vscode.WebviewViewProvider {
         case 'setEnv':
           terminal.sendText('RAILS_ENV=test');
           break;
-      }
+
+		case 'runRspec':
+			const editor = vscode.window.activeTextEditor;
+			if (editor) {
+				const filePath = editor.document.uri.fsPath;
+				const workspaceFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
+				if (workspaceFolder) {
+				const relativePath = vscode.workspace.asRelativePath(filePath);
+				terminal.sendText(`rspec ${relativePath}`, true);
+				} else {
+				vscode.window.showErrorMessage('このファイルはワークスペース内にありません。');
+				}
+			} else {
+				vscode.window.showErrorMessage('アクティブなエディタが見つかりません。');
+			}
+			break;
+
+		case 'runRubocop':
+			const editorRubocop = vscode.window.activeTextEditor;
+			if (editorRubocop) {
+				const filePathRubocop = editorRubocop.document.uri.fsPath;
+				const workspaceFolderRubocop = vscode.workspace.getWorkspaceFolder(editorRubocop.document.uri);
+				if (workspaceFolderRubocop) {
+				const relativePathRubocop = vscode.workspace.asRelativePath(filePathRubocop);
+				terminal.sendText(`rubocop -a ${relativePathRubocop}`, true);
+				} else {
+				vscode.window.showErrorMessage('このファイルはワークスペース内にありません。');
+				}
+			} else {
+				vscode.window.showErrorMessage('アクティブなエディタが見つかりません。');
+			}
+			break;
+
+		case 'runRubocopAll':
+			// 全てのファイルを対象にrubocopを実行
+			terminal.sendText('rubocop -a', true);
+			break;	
+		}
+
     });
   }
 
@@ -67,7 +105,7 @@ private getHtml(webview: vscode.Webview): string {
         }
         .main-button {
           width: 100%;
-          padding: 12px 0;
+          padding: 8px 0;
           font-size: 16px;
           color: white;
 		  background-color: #111;
@@ -128,6 +166,22 @@ private getHtml(webview: vscode.Webview): string {
         <button class="main-button" onclick="setEnv()">RAILS_ENV=test</button>
       </div>
 
+	  <div class="section">
+		<div class="description">現在のファイルをRSpecで実行</div>
+		<button class="main-button" onclick="runRspec()">rspec {現在のファイル}</button>
+	 </div>
+
+	  <div class="section">
+		<div class="description">現在のファイルをrubocop -aで実行</div>
+		<button class="main-button" onclick="runRubocop()">rubocop -a {現在のファイル}</button>
+	 </div>
+
+	 <div class="section">
+		<div class="description">全てのファイルをrubocop -aで実行</div>
+		<button class="main-button" onclick="runRubocopAll()">rubocop -a</button>
+	 </div>
+
+
       <script>
         const vscode = acquireVsCodeApi();
 
@@ -146,6 +200,15 @@ private getHtml(webview: vscode.Webview): string {
         function setEnv() {
           vscode.postMessage({ command: 'setEnv' });
         }
+		function runRspec() {
+		  vscode.postMessage({ command: 'runRspec' });
+		}
+		function runRubocop() {
+		  vscode.postMessage({ command: 'runRubocop' });
+		}
+		function runRubocopAll() {
+		  vscode.postMessage({ command: 'runRubocopAll' });
+		}
       </script>
     </body>
     </html>
