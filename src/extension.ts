@@ -12,6 +12,15 @@ export function activate(context: vscode.ExtensionContext) {
   const commandMap: Record<string, () => void> = {
     clearTerminal: () =>
       withTerminal((t) => t.sendText('clear', true), 'ターミナルをクリアしました'),
+    deleteTerminal: () => {
+      const terminal = vscode.window.activeTerminal;
+      if (terminal) {
+        terminal.dispose();
+        vscode.window.showInformationMessage('現在のターミナルを削除しました');
+      } else {
+        vscode.window.showErrorMessage('ターミナルが見つかりません');
+      }
+    },
     newTerminal: () => {
       vscode.window.createTerminal().show();
       vscode.window.showInformationMessage('新しいターミナルを開きました');
@@ -22,12 +31,25 @@ export function activate(context: vscode.ExtensionContext) {
     runRspec: () => runFileCommand('rspec'),
     runRubocop: () => runFileCommand('rubocop -a'),
     runRubocopAll: () => withTerminal((t) => t.sendText('rubocop -a', true)),
+    runRailsConsole: () => withTerminal((t) => t.sendText('rails console')),
+    runRailsConsoleSandbox: () => withTerminal((t) => t.sendText('rails console -s')),
+    runDbMigrate: () => withTerminal((t) => t.sendText('rails db:migrate')),
+    runDbMigrateStatus: () => withTerminal((t) => t.sendText('rails db:migrate:status')),
+    runDbRollback: () => withTerminal((t) => t.sendText('rails db:rollback')),
+    runRailsGenerateModel: () => withTerminal((t) => t.sendText('rails generate model')),
+    runRailsGenerateController: () => withTerminal((t) => t.sendText('rails generate controller')),
+    runRailsGenerateMigration: () => withTerminal((t) => t.sendText('rails generate migration')),
+    runRailsGenerateJob: () => withTerminal((t) => t.sendText('rails generate job')),
+    gitMergeDevelop: () => withTerminal((t) => t.sendText('git merge develop')),
   };
 
   Object.entries(commandMap).forEach(([name, callback]) =>
     context.subscriptions.push(vscode.commands.registerCommand(`railstools.${name}`, callback))
   );
 }
+
+const sectionNames = ['terminal', 'docker', 'rspec', 'rubocop', 'rails', 'git'] as const;
+type SectionName = (typeof sectionNames)[number];
 
 class RailsToolsProvider implements vscode.TreeDataProvider<RailsToolItem> {
   getTreeItem(element: RailsToolItem): vscode.TreeItem {
@@ -36,14 +58,13 @@ class RailsToolsProvider implements vscode.TreeDataProvider<RailsToolItem> {
 
   getChildren(element?: RailsToolItem): RailsToolItem[] {
     if (!element) {
-      return ['terminal', 'docker', 'rspec', 'rubocop'].map((section) =>
-        createSectionItem(section.toUpperCase(), section)
-      );
+      return sectionNames.map((section) => createSectionItem(section.toUpperCase(), section));
     }
 
-    const sectionCommands: Record<string, [string, string][]> = {
+    const sectionCommands: Record<SectionName, [string, string][]> = {
       terminal: [
-        ['ターミナルをクリア', 'clearTerminal'],
+        ['現在のターミナルをクリア', 'clearTerminal'],
+        ['現在のターミナルを削除', 'deleteTerminal'],
         ['新しいターミナルを開く', 'newTerminal'],
       ],
       docker: [
@@ -56,11 +77,22 @@ class RailsToolsProvider implements vscode.TreeDataProvider<RailsToolItem> {
         ['rubocop -a（現在のファイル）', 'runRubocop'],
         ['rubocop -a（全ファイル）', 'runRubocopAll'],
       ],
-      rails: [['rails console', 'runRailsConsole']],
+      rails: [
+        ['rails console', 'runRailsConsole'],
+        ['rails console -s', 'runRailsConsoleSandbox'],
+        ['rails db:migrate', 'runDbMigrate'],
+        ['rails db:migrate:status', 'runDbMigrateStatus'],
+        ['rails db:rollback', 'runDbRollback'],
+        ['rails generate model', 'runRailsGenerateModel'],
+        ['rails generate controller', 'runRailsGenerateController'],
+        ['rails generate migration', 'runRailsGenerateMigration'],
+        ['rails generate job', 'runRailsGenerateJob'],
+      ],
+      git: [['git merge develop', 'gitMergeDevelop']],
     };
 
     return (
-      sectionCommands[element.sectionId ?? '']?.map(([label, cmd]) =>
+      sectionCommands[element.sectionId as SectionName]?.map(([label, cmd]) =>
         createCommandItem(label, `railstools.${cmd}`)
       ) ?? []
     );
